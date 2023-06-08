@@ -1,0 +1,22 @@
+# HOW TO RUN THE CODE
+#
+# 1) Install requirements using
+# pip install -r requirements.txt
+#
+# 2) Run the streamlit server using
+# streamlit run main.py
+# This should open up a web browser with the application running.
+# You can navigate through the app pages and see the analysis results.
+#
+# 3) If the above command does not bring up a web browser,
+# then please visit the following URL, keeping the server command running:
+# http://localhost:8501
+
+matplotlib==3.5.1
+numpy==1.22.3
+pandas==1.4.2
+scipy==1.7.3
+statsmodels==0.13.5
+streamlit==1.22.0
+pyextremes==2.2.4
+yfinance==0.1.72
