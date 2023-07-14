@@ -6,9 +6,11 @@ Time Series analysis page
 """
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.graphics.tsaplots import plot_acf
+from statsmodels.tsa.stattools import adfuller
 
 # Get common data from the first page
 closing_prices = st.session_state['closing_prices']
@@ -33,6 +35,47 @@ ax4.set_xlabel('Year')
 fig_seasonal.tight_layout()
 
 st.pyplot(fig_seasonal)
+
+def compute_rms(seq):
+    return np.sqrt(np.mean(seq**2))
+
+rms_cp = compute_rms(closing_prices[sym])
+rms_trend = compute_rms(decomposition.trend)
+rms_seasonal = compute_rms(decomposition.seasonal)
+rms_resid = compute_rms(decomposition.resid)
+
+rms_cp_recent = compute_rms(closing_prices[sym][-1000:])
+rms_trend_recent = compute_rms(decomposition.trend[-1000:])
+rms_seasonal_recent = compute_rms(decomposition.seasonal[-1000:])
+rms_resid_recent = compute_rms(decomposition.resid[-1000:])
+
+st.table(
+    pd.DataFrame(
+        {
+            'RMS of\nentire series': [
+                rms_cp,
+                rms_trend,
+                rms_seasonal,
+                rms_resid
+            ],
+            'RMS of last\n1000 trading days': [
+                rms_cp_recent,
+                rms_trend_recent,
+                rms_seasonal_recent,
+                rms_resid_recent
+            ],
+        },
+        index = [
+            'Closing Price series',
+            'Trend component',
+            'Seasonal component',
+            'Residual component',
+        ]
+    )
+)
+
+adf_p_value = adfuller(decomposition.resid.dropna())[1]
+st.write(f'The p-value of the Augmented Dickey-Fuller test is: {adf_p_value:.3}')  
 
 # Plot the AutoCorrelation Function
 fig_acf, ax_acf = plt.subplots()
